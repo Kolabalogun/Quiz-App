@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "QuizApp",
+    "slug": "QuizApp",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/quiz.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/quiz.png",
+      "resizeMode": "contain",
+        "backgroundColor": "rgb(254, 244, 232)"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ibrahimdevv.QuizApp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/quiz.png",
+          "backgroundColor": "rgb(254, 244, 232)"
+      },
+      "package": "com.ibrahimdevv.QuizApp"
+    },
+    "web": {
+      "favicon": "./assets/quiz.png"
+    }
+  }
+}
