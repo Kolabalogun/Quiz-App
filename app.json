@@ -9,14 +9,12 @@
     "splash": {
       "image": "./assets/quiz.png",
       "resizeMode": "contain",
-        "backgroundColor": "rgb(254, 244, 232)"
+      "backgroundColor": "#fef4e8"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ibrahimdevv.QuizApp"
@@ -24,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/quiz.png",
-          "backgroundColor": "rgb(254, 244, 232)"
+        "backgroundColor": "#fef4e8"
       },
       "package": "com.ibrahimdevv.QuizApp"
     },
