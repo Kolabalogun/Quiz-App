@@ -21,13 +21,13 @@ LogBox.ignoreLogs([
 const Main = ({ navigation }) => {
   const { loader, loaderF } = useGlobalContext();
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigation.navigate("Home");
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (!user) {
+  //       navigation.navigate("Home");
+  //     }
+  //   });
+  // }, []);
 
   return (
     <>

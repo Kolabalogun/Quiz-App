@@ -1,23 +1,25 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
-const Loader = ({ txt }) => {
+const Loader = () => {
   return (
-    <View style={styles.loadercontainer}>
-      <Text style={styles.lod}>{txt}.</Text>
+    <View style={[styles.container, styles.horizontal]}>
+      <ActivityIndicator size="large" color={"#2d425e"} />
     </View>
   );
 };
 
-export default Loader;
-
 const styles = StyleSheet.create({
-  loadercontainer: {
+  container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgb(254, 244, 232)",
+    backgroundColor: "#fff",
   },
-  lod: {
-    fontSize: 14,
+  horizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
   },
 });
+
+export default Loader;

@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/quiz.png",
       "resizeMode": "contain",
-      "backgroundColor": "#fef4e8"
+      "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/quiz.png",
-        "backgroundColor": "#fef4e8"
+        "backgroundColor": "#ffffff"
       },
       "package": "com.ibrahimdevv.QuizApp"
     },

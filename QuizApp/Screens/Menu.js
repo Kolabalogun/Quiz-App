@@ -19,13 +19,15 @@ import { auth } from "../Function/Firebase";
 const Menu = () => {
   const { user, navigation } = useGlobalContext();
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigation.navigate("Home");
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (!user) {
+  //       navigation.navigate("Home");
+  //     }
+  //   });
+  // }, []);
+
+  console.log(user);
 
   return (
     <View style={styles.container}>

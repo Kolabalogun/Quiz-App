@@ -19,9 +19,12 @@ import {
 } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { useGlobalContext } from "../Function/Context";
+import Loader from "../Components/Loader";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
 const Register = ({ navigation }) => {
-  const { loader, loaderF } = useGlobalContext();
+  const { loader, loaderF, storeData } = useGlobalContext();
   const [email, emailF] = useState("");
   const [name, nameF] = useState("");
   const [password, passwordF] = useState("");
@@ -36,142 +39,199 @@ const Register = ({ navigation }) => {
     return () => clearTimeout(timer);
   }, [notification]);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigation.navigate("Main", { user: user });
-      }
-    });
+  // useEffect(() => {
+  //   const unsub = onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       navigation.navigate("Main", { user: user });
+  //     }
+  //   });
 
-    return unsub;
-  }, []);
+  //   return unsub;
+  // }, []);
+
+  // FUCNTION TO VALIDATE EMAIL
+
+  const isValidEmail = (email) => {
+    // Simple email validation regex pattern
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // REGISTER NEW USERS
 
   const RegisterUser = async () => {
-    if (password !== confirmpassword) {
-      notificationF("Password don't match");
-    } else if (email && name && password) {
-      loaderF(true);
-      const user = await createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
+    // TRIM ALL DETAILS
+    const trimmedEmail = email.trim();
+    const trimmedName = name.trim();
+    const trimmedPassword = password.trim();
+    const trimmedConfirmPassword = confirmpassword.trim();
 
-          // console.log(user);
-          loaderF(false);
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          notificationF(errorMessage);
-          console.log(error);
-        });
+    // - CHECK IF EMAIL IS VALID
+    if (!isValidEmail(trimmedEmail)) {
+      notificationF("Please enter a valid email address");
+      return loaderF(false);
+    }
 
-      updateProfile(auth.currentUser, {
-        displayName: `${name}
-          `,
+    // - CHECK IF PASSWORD MATCHED
+    if (trimmedPassword !== trimmedConfirmPassword) {
+      notificationF("Passwords don't match");
+      return loaderF(false);
+    }
+
+    // - CHECK IF EMAIL, NAME, AND PASSWORD ARE PRESENT
+    if (!trimmedEmail || !trimmedName || !trimmedPassword) {
+      notificationF("All fields must be filled!");
+      return loaderF(false);
+    }
+
+    loaderF(true);
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        trimmedEmail,
+        trimmedPassword
+      );
+      const user = userCredential.user; // user info from firebase
+
+      await updateProfile(user, {
+        displayName: trimmedName,
       });
-    } else {
-      notificationF("All field must be filled!");
+
+      await SaveToAsyncStorage(user);
+
+      loaderF(false);
+    } catch (error) {
+      const errorMessage = error.message;
+      notificationF(errorMessage);
+      console.log(error);
+      loaderF(false);
+    }
+  };
+
+  const SaveToAsyncStorage = async (value) => {
+    const jsonValue = JSON.stringify(value);
+
+    try {
+      await AsyncStorage.setItem("user", jsonValue);
+      Alert.alert("Quiz App", "User Updated", [
+        {
+          text: "Cancel",
+          // onPress: () => console.log('Cancel Pressed'),
+          style: "cancel",
+        },
+        // {text: 'OK', onPress: () => console.log('OK Pressed')},
+      ]);
+      console.log(jsonValue, "saved to react storage 120");
+    } catch (error) {
+      console.error("Error saving array of objects:", error);
     }
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.floews}>
-        <View>
-          <Image
-            style={{
-              width: 200,
-              height: 200,
+    <>
+      {loader ? (
+        <Loader />
+      ) : (
+        <ScrollView style={styles.container}>
+          <View style={styles.floews}>
+            <View>
+              <Image
+                style={{
+                  width: 200,
+                  height: 200,
 
-              left: 0,
-            }}
-            source={{
-              uri: "https://cdn3d.iconscout.com/3d/premium/thumb/plant-5233517-4403026.png",
-            }}
-          />
-        </View>
-        <View>
-          <Image
-            style={{
-              width: 100,
-              height: 100,
-            }}
-            source={{
-              uri: "https://cdn3d.iconscout.com/3d/premium/thumb/maple-leaves-4243386-3527426.png",
-            }}
-          />
-        </View>
-      </View>
-
-      <View style={styles.caption}>
-        <Text style={styles.captionTitile}>Sign Up</Text>
-        <Text style={styles.captionTxt}>Create an account, It's free</Text>
-
-        <KeyboardAvoidingView behavior="padding">
-          <View style={styles.txtInputDiv}>
-            <TextInput
-              autoComplete="email"
-              keyboardType="email-address"
-              style={styles.txtInput}
-              onChangeText={(e) => emailF(e)}
-              placeholder="Email"
-              value={email}
-            />
+                  left: 0,
+                }}
+                source={require("../assets/plant.png")}
+              />
+            </View>
+            <View>
+              <Image
+                style={{
+                  width: 100,
+                  height: 100,
+                }}
+                source={{
+                  uri: "https://cdn3d.iconscout.com/3d/premium/thumb/maple-leaves-4243386-3527426.png",
+                }}
+              />
+            </View>
           </View>
-          <View style={styles.txtInputDiv}>
-            <TextInput
-              autoComplete="name"
-              keyboardType="default"
-              style={styles.txtInput}
-              onChangeText={(e) => nameF(e)}
-              placeholder="Your Name"
-              value={name}
-            />
-          </View>
-          <View style={styles.txtInputDiv}>
-            <TextInput
-              autoComplete="password"
-              secureTextEntry={true}
-              style={styles.txtInput}
-              onChangeText={(e) => passwordF(e)}
-              placeholder="Password"
-              value={password}
-            />
-          </View>
-          <View style={styles.txtInputDiv}>
-            <TextInput
-              style={styles.txtInput}
-              secureTextEntry={true}
-              onChangeText={(e) => confirmpasswordF(e)}
-              placeholder="Confirm Password"
-              value={confirmpassword}
-            />
-          </View>
-        </KeyboardAvoidingView>
-        <Text style={{ color: "red", padding: 5 }}>{notification}</Text>
 
-        <View>
-          <TouchableOpacity style={styles.button} onPress={RegisterUser}>
-            <Text style={styles.buttonTet}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.caption}>
+            <Text style={styles.captionTitile}>Sign Up</Text>
+            <Text style={styles.captionTxt}>Create an account, It's free</Text>
 
-        <View style={styles.buttom}>
-          <Text>Already have an account? </Text>
+            <KeyboardAvoidingView behavior="padding">
+              <View style={styles.txtInputDiv}>
+                <TextInput
+                  autoComplete="email"
+                  keyboardType="email-address"
+                  style={styles.txtInput}
+                  onChangeText={(e) => emailF(e)}
+                  placeholder="Email"
+                  value={email}
+                />
+              </View>
+              <View style={styles.txtInputDiv}>
+                <TextInput
+                  autoComplete="name"
+                  keyboardType="default"
+                  style={styles.txtInput}
+                  onChangeText={(e) => nameF(e)}
+                  placeholder="Your Name"
+                  value={name}
+                />
+              </View>
+              <View style={styles.txtInputDiv}>
+                <TextInput
+                  autoComplete="password"
+                  secureTextEntry={true}
+                  style={styles.txtInput}
+                  onChangeText={(e) => passwordF(e)}
+                  placeholder="Password"
+                  value={password}
+                />
+              </View>
+              <View style={styles.txtInputDiv}>
+                <TextInput
+                  style={styles.txtInput}
+                  secureTextEntry={true}
+                  onChangeText={(e) => confirmpasswordF(e)}
+                  placeholder="Confirm Password"
+                  value={confirmpassword}
+                />
+              </View>
+            </KeyboardAvoidingView>
+            <Text style={{ color: "red", padding: 5 }}>{notification}</Text>
 
-          <TouchableOpacity
-            // style={}
-            onPress={() => {
-              navigation.navigate("Login");
-            }}
-          >
-            <Text style={{ color: "black", fontSize: 14, fontWeight: "800" }}>
-              Sign In
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+            <View>
+              <TouchableOpacity style={styles.button} onPress={RegisterUser}>
+                <Text style={styles.buttonTet}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.buttom}>
+              <Text>Already have an account? </Text>
+
+              <TouchableOpacity
+                // style={}
+                onPress={() => {
+                  navigation.navigate("Login");
+                }}
+              >
+                <Text
+                  style={{ color: "black", fontSize: 14, fontWeight: "800" }}
+                >
+                  Sign In
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      )}
+    </>
   );
 };
 

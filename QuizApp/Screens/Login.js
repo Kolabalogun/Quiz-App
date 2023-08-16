@@ -16,11 +16,14 @@ import { useNavigation } from "@react-navigation/native";
 import { useGlobalContext } from "../Function/Context";
 
 const Login = () => {
-  const { loader, loaderF } = useGlobalContext();
+  const { loader, loaderF, setuser } = useGlobalContext();
 
   const [email, emailF] = useState("");
 
   const [password, passwordF] = useState("");
+
+  // NOTIFICATION
+
   const [notification, notificationF] = useState("");
 
   useEffect(() => {
@@ -30,34 +33,73 @@ const Login = () => {
     return () => clearTimeout(timer);
   }, [notification]);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // navigation.navigate("Main");
-      }
-    });
+  // FUNCTION TO HANDLE LOG IN
 
-    return unsub;
-  }, []);
+  // FUCNTION TO VALIDATE EMAIL
 
+  const isValidEmail = (email) => {
+    // Simple email validation regex pattern
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
   const handleLogin = async () => {
-    if (email && password) {
-      loaderF(true);
-      const user = signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-          loaderF(false);
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          notificationF(errorMessage);
-        });
-    } else {
-      notificationF("All field must be filled!");
+    // TRIM ALL DETAILS
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    // CHECK IF EMAIL IS VALID
+    if (!isValidEmail(trimmedEmail)) {
+      notificationF("Please enter a valid email address");
+      return loaderF(false);
+    }
+
+    // CHECK IF EMAIL AND PASSWORD ARE PRESENT
+    if (!trimmedEmail || !trimmedPassword) {
+      notificationF("All fields must be filled!");
+      return loaderF(false);
+    }
+
+    loaderF(true);
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      setuser(user);
+
+      await SaveToAsyncStorage(user);
+
+      loaderF(false);
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      notificationF(errorMessage);
+      loaderF(false);
     }
   };
+
+  const SaveToAsyncStorage = async (value) => {
+    const jsonValue = JSON.stringify(value);
+
+    try {
+      await AsyncStorage.setItem("user", jsonValue);
+      Alert.alert("Quiz App", "User Updated", [
+        {
+          text: "Cancel",
+          // onPress: () => console.log('Cancel Pressed'),
+          style: "cancel",
+        },
+        // {text: 'OK', onPress: () => console.log('OK Pressed')},
+      ]);
+      console.log(jsonValue, "saved to react storage 120");
+    } catch (error) {
+      console.error("Error saving array of objects:", error);
+    }
+  };
+  ``;
 
   return (
     <ScrollView style={styles.container}>

@@ -17,25 +17,16 @@ import MenuButton from "../Components/MenuButton";
 import { useGlobalContext } from "../Function/Context";
 
 const Others = () => {
-  const { navigation } = useGlobalContext();
+  const { navigation, handleLogout } = useGlobalContext();
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigation.navigate("Home");
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (!user) {
+  //       navigation.navigate("Home");
+  //     }
+  //   });
+  // }, []);
 
-  const LogOut = () => {
-    signOut(auth)
-      .then(() => {
-        // navigation.navigate("Home");
-      })
-      .catch((error) => {
-        // An error happened.
-      });
-  };
   const Highnav = () => {
     navigation.navigate("Highscore");
   };
@@ -68,7 +59,7 @@ const Others = () => {
             "https://cdn.iconscout.com/icon/free/png-128/logout-2032031-1713022.png"
           }
           txt={"Log Out"}
-          func={LogOut}
+          func={handleLogout}
         />
       </View>
     </View>
