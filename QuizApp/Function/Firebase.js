@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC293pmlLyBGRSCU-xP3xYW5yyyRm6YUjU",
-  authDomain: "quizapp-32f57.firebaseapp.com",
-  projectId: "quizapp-32f57",
-  storageBucket: "quizapp-32f57.appspot.com",
-  messagingSenderId: "435745931807",
-  appId: "1:435745931807:web:9483597e78767697e98b2a",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
